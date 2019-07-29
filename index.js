@@ -205,3 +205,60 @@ let straight = (s, numRows) => {
     return res
   }
 }
+
+
+
+
+
+// 罗马数字 => 阿拉伯数字
+var intToRoman = function(num) {
+    if (num < 1 || num > 3999) {
+        return false
+    }
+    let arr = [['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'], ['', 'X', 'XX', 'XXX', 'XL', 'L', 'LX', 'LXX', 'LXXX', 'XC'], ['', 'C', 'CC', 'CCC', 'CD', 'D', 'DC', 'DCC', 'DCCC', 'CM'], ['', 'M', 'MM', 'MMM']], i = 0, j = 0, res = ''
+    while (num > 1) {
+        j = num % 10
+        num = ~~(num /= 10)
+        res = arr[i][j] + res
+        i++
+    }
+    return res
+};
+r = intToRoman(58)
+// 得到无序数组的最长递增子序列
+var ascendSubArr = arr => {
+  let res = arr.slice(0, 1), i = 1
+  while (i < arr.length) {
+    if ((res[res.length - 2] || arr[i] - 1) < arr[i] && arr[i] < res[res.length - 1]) {
+      res[res.length - 1] = arr[i]
+    }
+    i++
+  }
+  return res
+}
+// 阿拉伯数字 => 罗马数字
+let romanToInt = s => {
+  if (s < 0 || 3999 < s) {
+    return false
+  }
+  let map = {
+    I: 1,
+    V: 5,
+    X: 10,
+    L: 50,
+    C: 100,
+    D: 500,
+    M: 1000
+  }
+  let arr = s.split('').reverse(), i = 1, res = map[arr[0]]
+  while (i < arr.length) {
+    if (map[arr[i - 1]] > map[arr[i]]) {
+      res -= map[arr[i]]
+    } else {
+      
+      res += map[arr[i]]
+    }
+    i++
+  }
+  return res
+}
