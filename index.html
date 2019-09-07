@@ -7,18 +7,35 @@
   <script>
     var r = null
 
+    Queue.prototype.enqueue = function (element) {
+      let arr = this.getArray(), index = 0, arrLen = arr.length
+      while (arr[index] <= element) {
+        index++
+        if (arr[index] > element) {
+          break
+        }
+      }
+      arr.splice(index, 0, element)
+    }
     r = new Queue()
-    r.enqueue(1,2,3,4)
+    r.enqueue('a')
+    r.enqueue('c')
+    r.enqueue('s')
+    r.enqueue('t')
+    r.enqueue('d')
+    r.enqueue('df')
+    r.enqueue('')
+    // r.enqueue(1,2,3,4)
     console.log(r.getArray())
-    r.dequeue()
-    console.log(r.getArray())
-    console.log(r.front())
-    console.log(r.end())
-    console.log(r.isEmpty())
-    console.log(r.size())
-    console.log(r.clear())
-    console.log(r.isEmpty())
-    console.log(r.size())
+    // r.dequeue()
+    // console.log(r.getArray())
+    // console.log(r.front())
+    // console.log(r.end())
+    // console.log(r.isEmpty())
+    // console.log(r.size())
+    // console.log(r.clear())
+    // console.log(r.isEmpty())
+    // console.log(r.size())
 
 
 

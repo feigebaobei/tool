@@ -322,6 +322,17 @@ let Queue = (function () {
     enqueue (...args) {
       this.getArray().push(...args)
     }
+    // 若要使用优先队列可以使用下面的方法重新设置追加元素的方法
+    // Queue.prototype.enqueue = function (element) {
+    //   let arr = this.getArray(), index = 0, arrLen = arr.length
+    //   while (arr[index] <= element) {
+    //     index++
+    //     if (arr[index] > element) {
+    //       break
+    //     }
+    //   }
+    //   arr.splice(index, 0, element)
+    // }
     // 移除队列的第一个元素，并返回移除的元素
     dequeue () {
       return this.getArray().shift()
