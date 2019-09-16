@@ -315,4 +315,46 @@ let queryString = (url) => url.split('?')[1].split('&').reduce((res, cur) => {
   res[decodeURIComponent(k)] = decodeURIComponent(v)
   return res
 }, {})
-
+/*
+是否是对象
+ */
+let isObject = value => value.constructor === Object
+// 是否是promise对象
+let isPromise = p => typeof(p.then) === 'function'
+// 把多维数组展开为一维数组.
+let flatArray = function * (arr) {
+  for (let v of arr) {
+    if (v instanceof Array) {
+      yield* flatArray(v)
+    } else {
+      yield v
+    }
+  }  
+}
+// var r = flatArray([1,2,3,4,[1,2,3],23,3])
+// console.log(...r)
+// 生成n位随机文本。
+function random (n) {
+  if (n < 1) {
+    return ''
+  }
+  let str = '', index = 0, box = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+  while (index < n) {
+    str += box[Math.floor(Math.random() * 36)]
+    index++
+  }
+  return str
+}
+// 设置睡眠
+let sleep = async (time) => {
+  await new Promise(resolve => {
+    setTimeout(() => {
+      resolve()
+    }, time);
+  })
+}
+// async function asyncPrint(value, ms) {
+//     await sleep(ms)
+//     console.log(value)
+// }
+// asyncPrint('str', 2000)
