@@ -1,7 +1,7 @@
 /**
  * 是否为奇数
  */
-let isOdd = n => !!n ^ 1
+let isOdd = n => !!(n & 1)
 /**
  * 位运算，是否为偶数
  */
@@ -305,6 +305,14 @@ var ascendSubArr = arr => {
   }
   return res
 }
-
-
+/**
+ * 得到查询字符串
+ * @param  {[String]} url) [url]
+ * @return {[Object]}      [description]
+ */
+let queryString = (url) => url.split('?')[1].split('&').reduce((res, cur) => {
+  let [k, v] = cur.split('=')
+  res[decodeURIComponent(k)] = decodeURIComponent(v)
+  return res
+}, {})
 
