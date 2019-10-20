@@ -1,7 +1,7 @@
 /**
  * 是否为奇数
  */
-let isOdd = n => !!n ^ 1
+let isOdd = n => !!(n & 1)
 /**
  * 位运算，是否为偶数
  */
@@ -205,11 +205,55 @@ let straight = (s, numRows) => {
     return res
   }
 }
-
-
-
-
-
+/**
+ * 得到浏览器种类
+ */
+let getBrowser = () => {
+    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+    var isOpera = userAgent.indexOf("Opera") > -1; //判断是否Opera浏览器
+    var isIE = userAgent.indexOf("compatible") > -1
+            && userAgent.indexOf("MSIE") > -1 && !isOpera; //判断是否IE浏览器
+    var isEdge = userAgent.indexOf("Edge") > -1; //判断是否IE的Edge浏览器
+    var isFF = userAgent.indexOf("Firefox") > -1; //判断是否Firefox浏览器
+    var isSafari = userAgent.indexOf("Safari") > -1
+            && userAgent.indexOf("Chrome") == -1; //判断是否Safari浏览器
+    var isChrome = userAgent.indexOf("Chrome") > -1
+            && userAgent.indexOf("Safari") > -1; //判断Chrome浏览器
+    if (isIE) {
+        var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+        reIE.test(userAgent);
+        var fIEVersion = parseFloat(RegExp["$1"]);
+        if (fIEVersion == 7) {
+            return "IE7";
+        } else if (fIEVersion == 8) {
+            return "IE8";
+        } else if (fIEVersion == 9) {
+            return "IE9";
+        } else if (fIEVersion == 10) {
+            return "IE10";
+        } else if (fIEVersion == 11) {
+            return "IE11";
+        } else {
+            return "0";
+        }//IE版本过低
+        return "IE";
+    }
+    if (isOpera) {
+        return "Opera";
+    }
+    if (isEdge) {
+        return "Edge";
+    }
+    if (isFF) {
+        return "FF";
+    }
+    if (isSafari) {
+        return "Safari";
+    }
+    if (isChrome) {
+        return "Chrome";
+    }
+}
 // 罗马数字 => 阿拉伯数字
 var intToRoman = function(num) {
     if (num < 1 || num > 3999) {
@@ -224,18 +268,6 @@ var intToRoman = function(num) {
     }
     return res
 };
-r = intToRoman(58)
-// 得到无序数组的最长递增子序列
-var ascendSubArr = arr => {
-  let res = arr.slice(0, 1), i = 1
-  while (i < arr.length) {
-    if ((res[res.length - 2] || arr[i] - 1) < arr[i] && arr[i] < res[res.length - 1]) {
-      res[res.length - 1] = arr[i]
-    }
-    i++
-  }
-  return res
-}
 // 阿拉伯数字 => 罗马数字
 let romanToInt = s => {
   if (s < 0 || 3999 < s) {
@@ -262,7 +294,70 @@ let romanToInt = s => {
   }
   return res
 }
-
+// 得到无序数组的最长递增子序列
+var ascendSubArr = arr => {
+  let res = arr.slice(0, 1), i = 1
+  while (i < arr.length) {
+    if ((res[res.length - 2] || arr[i] - 1) < arr[i] && arr[i] < res[res.length - 1]) {
+      res[res.length - 1] = arr[i]
+    }
+    i++
+  }
+  return res
+}
+/**
+ * 得到查询字符串
+ * @param  {[String]} url) [url]
+ * @return {[Object]}      [description]
+ */
+let queryString = (url) => url.split('?')[1].split('&').reduce((res, cur) => {
+  let [k, v] = cur.split('=')
+  res[decodeURIComponent(k)] = decodeURIComponent(v)
+  return res
+}, {})
+/*
+是否是对象
+ */
+let isObject = value => value.constructor === Object
+// 是否是promise对象
+let isPromise = p => typeof(p.then) === 'function'
+// 把多维数组展开为一维数组.
+let flatArray = function * (arr) {
+  for (let v of arr) {
+    if (v instanceof Array) {
+      yield* flatArray(v)
+    } else {
+      yield v
+    }
+  }  
+}
+// var r = flatArray([1,2,3,4,[1,2,3],23,3])
+// console.log(...r)
+// 生成n位随机文本。
+function random (n) {
+  if (n < 1) {
+    return ''
+  }
+  let str = '', index = 0, box = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+  while (index < n) {
+    str += box[Math.floor(Math.random() * 36)]
+    index++
+  }
+  return str
+}
+// 设置睡眠
+let sleep = async (time) => {
+  await new Promise(resolve => {
+    setTimeout(() => {
+      resolve()
+    }, time);
+  })
+}
+// async function asyncPrint(value, ms) {
+//     await sleep(ms)
+//     console.log(value)
+// }
+// asyncPrint('str', 2000)
 /*
 栈
 */
