@@ -432,10 +432,10 @@ let Queue = (function () {
     dequeue () {
       return this.getArray().shift()
     }
-    front () {
+    head () {
       return this.getArray()[0]
     }
-    end () {
+    tail () {
       return this.getArray()[this.size() - 1]
     }
     isEmpty () {
