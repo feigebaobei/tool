@@ -3,77 +3,226 @@
 <head>
   <meta charset="UTF-8">
   <title>demo for tool</title>
-  <script src="./index.js"></script>
+  <!-- <script src="./index.js"></script> -->
   <script>
     var r = null
 
-    // Queue.prototype.enqueue = function (element) {
-    //   let arr = this.getArray(), index = 0, arrLen = arr.length
-    //   while (arr[index] <= element) {
-    //     index++
-    //     if (arr[index] > element) {
-    //       break
-    //     }
-    //   }
-    //   arr.splice(index, 0, element)
-    // }
-    // r = new Queue()
-    // r.enqueue('a')
-    // r.enqueue('c')
-    // r.enqueue('s')
-    // r.enqueue('t')
-    // r.enqueue('d')
-    // r.enqueue('df')
-    // r.enqueue('')
-    // // r.enqueue(1,2,3,4)
-    // console.log(r.getArray())
-    // r.dequeue()
-    // console.log(r.getArray())
-    // console.log(r.front())
-    // console.log(r.end())
-    // console.log(r.isEmpty())
-    // console.log(r.size())
-    // console.log(r.clear())
-    // console.log(r.isEmpty())
-    // console.log(r.size())
-    // r = new LinkedNode()
-    // r.append('str')
-    // r.append('str1')
-    // r.append('str2')
-    // r = linkedNodeReverse(r.head)
-    r = [3,4,6,2,4,6,8,3,6,2,6,8,2]
-    // arraySort.bubbleSort(r)
-    // arraySort.selectSort(r)
-    // arraySort.insertSort(r)
-    // r = arraySort.mergeSort(r)
-    arraySort.quickSort(r)
-    // r = new OrderArray()
-    // r.push(3)
-    // r.push(1)
-    // r.push(7)
-    // r.push(4)
-    // r.push(3)
-    // r.push(3)
-    // r.push(3)
-    // r.push(3)
-    // r.push(-3)
-    // // r.pullIndex(-1)
-    // // r.pullElementOne(3)
-    // r.pullElementAll(3)
+
+
+class DoublyLinkedList {
+  constructor () {
+    this.head = null
+    this.length = 0
+    this.tail = null
+  }
+  static node (element) {
+    return {
+      element: element,
+      prev: null,
+      next: null
+    }
+  }
+  // 追加
+  append (element) {
+    let node = DoublyLinkedList.node(element)
+    if (this.length) {
+      let t = this.tail
+      t.next = node
+      node.prev = t
+      this.tail = node
+      node.next = this.head
+      this.head.prev = node
+    } else {
+      this.head = node
+      this.tail = node
+      node.next = this.head
+      node.prev = this.tail
+    }
+    this.length++
+  }
+  // 在指定位置插入
+  insert (position, element) {
+    if (position > 0 && position <= this.length) {
+      let node = DoublyLinkedList.node(element), current, previous, index = 0
+      if (position === 0) { // head
+        // node.next = this.head
+        // this.head = node
+        if (this.length) {
+          node.next = this.head
+          this.head.prev = node
+          this.head = node
+        } else {
+          this.head = node
+          this.tail = node
+        }
+      } else {
+        if (position === this.length) { // tail
+          this.tail.next = node
+          node.prev = this.tail
+          this.tail = node
+        } else { // middle
+          current = this.head
+          while(index++ < position) {
+            previous = current
+            current = current.next
+          }
+          node.next = current
+          node.prev = previous
+          current.prev = node
+          previous.next = node
+        }
+      }
+      this.length++
+      return true
+    } else {
+      return false
+    }
+  }
+  // 删除指定位置的节点，若删除成功则返回节点的element。否则返回false
+  removeAt (position) {
+    if (position > -1 && position < this.length) {
+      let current = this.head, previous, index = 0
+      if (position === 0) { // head
+        if (this.length === 1) {
+          this.head = null
+          this.tail = null
+        } else {
+          this.head = this.head.next
+          this.head.prev = null
+        }
+      } else {
+        if (position === this.length - 1) { // tail
+          // if (this.length) {}
+          current = this.tail
+          this.tail = current.prev
+          this.tail.next = null
+        } else { // middle
+          while (index++ < position) {
+            previous = current
+            current = current.next
+          }
+          previous.next = current.next
+          current.next.prev = previous
+        }
+      }
+      this.length--
+      return current.element
+    } else {
+      return false
+    }
+  }
+  // 删除指定元素
+  removeElement (element, all = false) {
+    let current = this.head, res = []
+    while (current) {
+      if (current.element === element) {
+        if (!current.prev) { // 前面无元素
+          this.head = current.next
+          if (!current.next) { // 后面无元素
+            this.tail = current.prev
+          } else { // 后面有元素
+            current.next.prev = null
+          }
+        } else { // 前面有元素
+          if (!current.next) { // tail
+            this.tail = current.prev
+            current.prev.next = null
+          } else {
+            current.prev.next = current.next
+            current.next.prev = current.prev
+          }
+        }
+        this.length--
+        if (!all) {
+          break
+        }
+      }
+      current = current.next
+    }
+  }
+  // removeElementAll () {}
+  // 连接成字符串
+  join (separate = '') {
+    let current = this.head, res = ''
+    while (current) {
+      str += String(current.element) + separate
+      current = current.next
+    }
+    return str.substr(0, str.length - separate.length)
+  }
+  // 切片后的链条
+  // slice(start = 0, end = this.length - 1) {
+  //   if (start > 0 && start < this.length - 1 && end >= start && end <= this.length - 1) {
+  //     let current = this.head, index = 0
+  //     while (index < start) {
+  //       current = current.next
+  //       index++
+  //     }
+  //     this.head = current
+  //     this.head.prev = null
+  //     while (index < end) {
+  //       current = current.next
+  //       index++
+  //     }
+  //     this.tail = current
+  //     this.tail.next = null
+  //   }
+  //   let index = 0, current = this.head
+  //   while (current) {
+  //     current = current.next
+  //     index++
+  //   }
+  //   this.length = index
+  //   return this
+  // }
+  // 应改为不改变原链表，返回新链表。
+  slice (start = 0, end = this.length - 1) {
+    let link = new DoublyLinkedList()
+    for (let i = 0, iLen = end - start; i < iLen; i++) {
+      link.append(this.getEleByIndex(i))
+    }
+    return link
+  }
+  // 得到指定位置的元素
+  getEleByIndex (position) {
+    if (position > 0 && position < this.length) {
+      let index = 0, current = this.head
+      while (index++ < position) {
+        current = current.next
+      }
+      return current.element
+    }
+  }
+  // 得到头节点
+  getHead () {
+    return this.head
+  }
+  // 得到尾节点
+  getTail () {
+    return this.tail
+  }
+  // 是否是空节点
+  isEmpty () {
+    return this.length === 0
+  }
+}
 
 
 
+var a = new DoublyLinkedList()
+a.append(0)
+a.append(1)
+a.append(2)
+a.append(3)
+a.insert(2, 6)
+console.log(a)
 
-// 周一 am 京东
-//     pm visionvera
-// 周二 am 
-//     pm 
-// 周三 am 恒昌
-//     pm 
-
-
-
-
+// var a = new PriorityQueue()
+// a.enqueue(3, 2)
+// a.enqueue(4, 20)
+// a.enqueue(5, 2)
+// a.enqueue(6, 2)
+// console.log(a.getAll())
 
 
 
