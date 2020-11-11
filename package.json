@@ -6,7 +6,10 @@
   "dependencies": {
     "co": "^4.6.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

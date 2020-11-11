@@ -38,7 +38,7 @@ let limitPromise = (arr, handler, limit) => {
   // promises里是promise对象。
   // 当promise为filfulled状态时返回在arr中的index.
   promises = sequence.splice(0, limit).map((item, index) => {
-    return handler(item).then(() => index).catch((e) => {error: e, index})
+    return handler(item).then(() => index)//.catch((e) => {error: e, index})
   })
   return sequence.reduce((r, item, index) => {
     return r.then(() => {
@@ -48,7 +48,7 @@ let limitPromise = (arr, handler, limit) => {
       console.log(eo.error)
       return Promise.resolve(eo.index)
     })
-    .then((res) => {
+    .then((res) => { // res是promises里的下标
       promises[res] = handler(sequence[index]).then(() => res)
     })
   }, Promise.resovle()).then(() => {

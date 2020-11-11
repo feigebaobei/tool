@@ -180,6 +180,54 @@ class LinkedList extends LinkBase { // 声明式
       return current.element
     }
   }
+  // 得到指定位置的节点
+  getNodeByIndex (index) {
+    if (0 <= index && index < this.length) {
+      let i = 0
+      let res = this.head
+      while (i < index && res) {
+        res = res.next
+        i++
+      }
+      return res
+    } else {
+      return {}
+    }
+  }
+  // 轮换为为数组
+  toArray () {
+    let cur = this.head
+    let arr = []
+    while (cur) {
+      arr.push(cur.element)
+      cur = cur.next
+    }
+    return arr
+  }
+  // 反转。不改变原链表，返回新链表。
+  reverse () {
+    return this.toArray().reverse().reduce((r, cur) => {
+      r.append(cur)
+      return r
+    }, new LinkedList())
+  }
+  // 反转。改变原链表的顺序，不返回东西。
+  reverseSelf () {
+    let fn = (p, q = null) => {
+      if (p) {
+        return q
+      } else {
+        return fn(p.next, {element: p.element, next: q})
+      }
+    }
+    this.head = fn(this.head)
+  }
+  // 返回新的链表，不改变原链表。
+  slice () {}
+  // 在链表中指定的位置插入或删除指定的元素。返回被删除的链表部分。
+  splice () {}
+  // 重设置head,不修改原链表，返回新链表。
+  rehead () {}
 }
 /*
 双向链表
@@ -201,17 +249,12 @@ class DoublyLinkedList {
   append (element) {
     let node = DoublyLinkedList.node(element)
     if (this.length) {
-      let t = this.tail
-      t.next = node
-      node.prev = t
+      this.tail.next = node
+      node.prev = this.tail
       this.tail = node
-      node.next = this.head
-      this.head.prev = node
     } else {
       this.head = node
       this.tail = node
-      node.next = this.head
-      node.prev = this.tail
     }
     this.length++
   }
@@ -383,9 +426,192 @@ class DoublyLinkedList {
 }
 
 
+/*
+循环链表
+*/
+class CircularLinkedList extends LinkBase {
+  constructor () {
+    super()
+    this.length = 0
+    this.head = null
+    this.tail = null
+  }
+  static node (element) {
+    return {
+      element: element,
+      prev: null,
+      next: null
+    }
+  }
+  // 追加元素
+  append (element) {
+    let node = CircularLinkedList.node(element)
+    if (this.length) {
+      let last = this.tail
+      last.next = node
+      node.prev = last
+      this.tail = node
+      node.next = this.head
+      this.head.prev = node
+    } else {
+      this.head = node
+      node.prev = node
+      node.next = node
+      this.tail = node
+    }
+    this.length++
+  }
+  // 把元素插入到指定位置
+  insert (position, element) {
+    if (position <= this.length && position > -1) {
+      let node = CircularLinkedList.node(element)
+      if (this.length) {
+        if (position === 0) {
+          node.next = this.head
+          this.head.prev = node
+          node.prev = this.tail
+          this.tail.next = node
+          this.head = node
+        } else {
+          if (position === this.length) {
+            node.prev = this.tail
+            this.tail.next = node
+            this.tail = node
+            node.next = this.head
+            this.head.prev = node
+          } else {
+            let current = this.head, index = 0
+            while (index++ < position) {
+              current = current.next
+            }
+            current.prev.next = node
+            node.prev = current.prev
+            node.next = current
+            current.prev = node
+          }
+        }
+      } else {
+        this.head = node
+        this.tail = node
+        node.prev = node
+        node.next = node
+      }
+      this.length++
+      return true
+    } else {
+      return false
+    }
+  }
+  // 删除指定位置的节点，若删除成功则返回true。否则返回false
+  removeAt (position) {
+    if (position > -1 && position < this.length) {
+      if (this.length) {
+        let current = this.head, index = 0
+        while (index++ < position) {
+          current = current.next
+        }
+        current.prev.next = current.next
+        current.next.prev = current.prev
+        if (position === 0) {
+          this.head = current.next
+        } else {
+          if (position === this.length - 1) {
+            this.tail = current
+          }
+        }
+      } else {
+        this.head = null
+        this.tail = null
+      }
+      this.length--
+      return true
+    } else {
+      return false
+    }
+  }
+  // 删除指定的元素，返回删除节点的数据
+  removeElement (element, all = false) {
+    let current = this.head, index = 0, count = 0
+    while (index++ < this.length) {
+      current = current.next
+      if (current.element === element) {
+        if (index === 0) {// 删除头
+          if (this.length === 1) {
+            this.head = null
+            this.tail = null
+          } else {
+            this.head = this.head.next
+            this.head.prev = this.tail
+            this.tail.next = this.head
+          }
+        } else {
+          if (index === this.length - 1) { // 删除尾
+            this.tail = current.prev
+            this.tail.next = this.head
+            this.head.prev = this.tail
+          } else { // 删除中间
+            current.prev.next = current.next
+            current.next.prev = current.prev
+          }
+        }
+        index--
+        this.length--
+        count++
+        if (!all) {
+          break
+        }
+      }
+    }
+    return count
+  }
+  // 若切片成功，则返回指定范围的切片，否则返回false
+  slice (start = 0, end = this.length - 1) {
+    if (start > -1 && start <= end && end < this.length) {
+      let index = 0, current = this.head
+      this.length = end - start + 1
+      while (index++ < start) {
+        current = current.next
+      }
+      if (this.length) {
+        this.head = current
+        let count = 1
+        while (count++ < this.length - 1) {
+          current = current.next
+        }
+        this.tail = current
+        this.head.prev = this.tail
+        this.tail.next = this.head
+      } else {
+        this.head = null
+        this.tail = null
+      }
+      return this
+    }
+    return false
+  }
+  getEleByIndex (position) {
+    if (position > -1 && position < this.length) {
+      let current = this.head, index = 0
+      while (index++ < this.length) {
+        current = current.next
+      }
+      return current.element
+    }
+    return new Error('range error')
+  }
+  getTail (position) {
+    return this.tail
+  }
+}
+/*
+反转链表
+*/
+let linkedListReverse = (head, q = null) => head !== null ? linkedListReverse(head.next, {element: head.element, next: q}) : q
+
 
 export default {
   // LinkedList,
   LinkedList,
-  DoublyLinkedList
+  DoublyLinkedList,
+  linkedListReverse
 }
