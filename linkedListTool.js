@@ -1,17 +1,5 @@
 // 链表相关的工具方法
 
-// class LinkedList {
-//   constructor () {}
-//   append (element) {}
-//   insert (element, position) {}
-//   remove (element) {}
-//   removeAt (position) {}
-//   indexOf (element) {}
-//   isEmpty () {}
-//   size () {}
-//   // toString () {}
-// }
-
 /*
 链表
 */
@@ -21,7 +9,7 @@ class LinkBase {
     this.head = null
   }
   isEmpty () {
-    this.length === 0
+    return this.length === 0
   }
   size () {
     return this.length
@@ -106,7 +94,7 @@ class LinkedList extends LinkBase { // 声明式
     if (position > -1 && position < this.length) {
       let current = this.head, previous = null, index = 0
       if (position === 0) {
-        current = head
+        current = this.head
       } else {
         while (index++ < position) {
           previous = current
@@ -117,7 +105,7 @@ class LinkedList extends LinkBase { // 声明式
       this.length--
       return current.element
     } else {
-      return null
+      return false
     }
   }
   // 删除链表中包含指定元素的节点。不返回东西。

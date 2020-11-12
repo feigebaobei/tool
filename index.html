@@ -9,18 +9,13 @@
 
 
 
-
-
-/*
-链表
-*/
 class LinkBase {
   constructor () {
     this.length = 0
     this.head = null
   }
   isEmpty () {
-    this.length === 0
+    return this.length === 0
   }
   size () {
     return this.length
@@ -105,7 +100,8 @@ class LinkedList extends LinkBase { // 声明式
     if (position > -1 && position < this.length) {
       let current = this.head, previous = null, index = 0
       if (position === 0) {
-        current = head
+        current = this.head
+        this.head = this.head.next
       } else {
         while (index++ < position) {
           previous = current
@@ -116,7 +112,7 @@ class LinkedList extends LinkBase { // 声明式
       this.length--
       return current.element
     } else {
-      return null
+      return false
     }
   }
   // 删除链表中包含指定元素的节点。不返回东西。
@@ -193,30 +189,27 @@ class LinkedList extends LinkBase { // 声明式
       return {}
     }
   }
+  // 轮换为为数组
+  toArray () {
+    let cur = this.head
+    let arr = []
+    while (cur) {
+      arr.push(cur.element)
+      cur = cur.next
+    }
+    return arr
+  }
+  // 反转。不改变原链表，返回新链表。
   reverse () {
     return this.toArray().reverse().reduce((r, cur) => {
       r.append(cur)
       return r
     }, new LinkedList())
   }
-
-  // fn (p, q) {
-  //   if (p === null) {
-  //     return q
-  //   } else {
-  //     return this.fn(p.next, {element: p.element, next: q})
-  //   }
-  // }
-  // reverseSelf () {
-  //   let p = this.head
-  //   let q = null
-  //   // return this.fn(p, q)
-  //   this.head = this.fn(p, q)
-  //   // return this
-  // }表的顺序，不返回东西。
+  // 反转。改变原链表的顺序，不返回东西。
   reverseSelf () {
     let fn = (p, q = null) => {
-      if (!p) {
+      if (p) {
         return q
       } else {
         return fn(p.next, {element: p.element, next: q})
@@ -224,124 +217,85 @@ class LinkedList extends LinkBase { // 声明式
     }
     this.head = fn(this.head)
   }
-
-
-
-
   // 返回新的链表，不改变原链表。
-  slice (start = 0, end = this.length - 1) {
-    let link = new LinkedList()
-    var cur = this.getEleByIndex(start)
-    while (cur) {
-      console.log('cur', cur)
-      link.append(cur)
-      cur = cur.next
-    }
-    return link
-    // for (let i = 0, iLen = end - start; i < iLen; i++) {
-    //   if () {
-    //     link.append(this.getEleByIndex(i))
-    //   }
-    // }
-    // // link.head = this.getEleByIndex(start)
-    // return link
-  }
+  slice () {}
   // 在链表中指定的位置插入或删除指定的元素。返回被删除的链表部分。
-  splice(start = this.length - 1, end = this.length - 1, ...ele) {
-    // let link = new LinkedList()
-    let eles = [...ele]
-    let tails = this.getNodeByIndex(end)
-    // let len = eles.length
-
-    let link = this.slice(start, end)
-    // this
-    let index = 0
-    // while (index < )
-    let startInsertNode = this.getNodeByIndex(start)
-    // let tempList = {}
-    // let tempCur = {}
-    for (let i = 0, iLen = eles.length; i < iLen; i++) {
-      startInsertNode.next = {element: ele[i], next: null}
-      startInsertNode = startInsertNode.next
-    }
-    startInsertNode.next = tails
-    return link
-  }
+  splice () {}
   // 重设置head,不修改原链表，返回新链表。
-  rehead (position) {
-    if (0 < position && position < this.length) {
-      // position
-      this.getNodeByIndex()
-    } else {
-      return new LinkedList()
+  rehead () {}
+}
+class ValuePair {
+  constructor (key, value) {
+    this.key = key
+    this.value = value
+    this.toString = `[${key} - ${value}]`
+  }
+}
+
+class hashTableLinear {
+  constructor () {
+    this.table = {}
+  }
+  loseloseHashCode (key) {
+    let hash = 0
+    for (let i = 0, iLen = key.length; i < iLen; i++) {
+      hash += key.charCodeAt(i)
     }
+    return hash % 37
+  }
+  djbHashCode (key) {
+    var hash = 5381
+    for (let i = 0, iLen = key.length; i < iLen; i++) {
+      hash = hash * 33 + key.charCodeAt(i)
+    }
+    return hash % 1013
+  }
+  put (key, value) {
+    let position = this.djbHashCode(key)
+    while (this.table[position]) {
+      position++
+    }
+    this.table[position] = new ValuePair(key, value)
+  }
+  remove (key) {
+    let position = this.djbHashCode(key)
+    let value = undefined
+    while (this.table[position] && this.table[position].key !== key) {
+      position++
+    }
+    value = this.table[position] ? this.table[position].value : value
+    this.table[position] = undefined
+    return value
+  }
+  get (key) {
+    let position = this.djbHashCode(key)
+    let cur = this.table[position]
+    let value = undefined
+    while (cur && cur.key !== key) {
+      cur = this.table[position++]
+    }
+    return cur ? cur.value : value
   }
 }
 
 
-
-let fn = (node, temp = null) => {
-  if (node === null) return temp
-  else {
-    return fn(node.next, {element: node.element, next: temp})
-  }
-}
-
-reverseList = (node) => {
-  return fn(node, null)
-}
-
-// {
-//   element: 
-//   next: 
-// }
-
-
-// {
-//   head: null
-// }
-// {
-//   head: {
-//     element: value,
-//     next: {
-//       element: value,
-//       next: {
-//         element: value,
-//         next: null
-//       }
-//     }
-//   }
-// }
-
-let linkedListReverse = (head, q = null) => {
-  return head !== null ? linkedListReverse(head.next, {element: head.element, next: q}) : q
-}
-// linked
-
-r = new LinkedList()
-r.append(1)
-r.append(2)
-r.append(3)
-r.append(4)
-r.append(5)
-r.append(6)
-r.append(7)
-console.log(r)
-// r = linkedListReverse(r.head)
-// va
-// r = r.slice(2,5)
-// r = r.splice(3, 4, 1,2,3)
-// r = r.reverse()
-// r = LinkedList.reverse(r.head)
-// r = reverseList(r.head)
-// r = r.re()
-// r = r.toArray()
-// r = r.reverse()
-r.reverseSelf()
+r = new hashTableLinear()
+r.put('Jonatian', 'a')
+r.put('Jamie', 'b')
+r.put('Sue', 'c3')
+r.put('c', 'cqwert')
+let ele = r.remove('Sue')
+// let ele = r.remove('Jamie')
+// let ele = r.remove('Jonatian')
+// let ele = r.remove('c')
+// let ele = r.get('Jonatian')
+// r = r.get('c')
 
 
 
 
+
+    // console.log(ele)
     console.log(r)
   </script>
 </head>

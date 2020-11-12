@@ -377,6 +377,29 @@ let searchStrToObj = (searchStr) => {
   }, {})
 }
 
+let setExtend = {
+  // 并集
+  union = (seta, setb) => {
+    return [...setb].reduce((r, c) => {
+      r.add(c)
+      return r
+    }, new Set(seta))
+  },
+  // 交集
+  intersection = (seta, setb) => {
+    return new Set([...seta].filter((item) => setb.has(item)))
+  },
+  // 差集
+  // 存在于seta中，不存在于setb中。
+  difference = (seta, setb) => {
+    return new Set([...seta].filter(item => !setb.has(item)))
+  },
+  // 是否是子集
+  isSubset = (parent, child) => {
+    return [...child].every(item => parent.has(item))
+  }
+}
+
 export default {
   searchStrToObj,
   isOdd,
@@ -401,4 +424,5 @@ export default {
   sleep,
   hasPrototypeProperty,
   searchStrToObj,
+  setExtend
 }
