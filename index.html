@@ -9,282 +9,104 @@
 
 
 
-class LinkBase {
+class BinarySearchTree {
   constructor () {
-    this.length = 0
-    this.head = null
+    this.root = null
   }
-  isEmpty () {
-    return this.length === 0
-  }
-  size () {
-    return this.length
-  }
-  getHead () {
-    return this.head
-  }
-  // getTail () {
-  //   return this.tail
-  // }
-  join (separate = '') {
-    let current = this.head, str = ''
-    while (current) {
-      str += String(current.element) + separate
-      current = current.next
-    }
-    return str.substr(0, str.length - separate.length)
-  }
-}
-class LinkedList extends LinkBase { // 声明式
-  constructor (iterate = []) {
-    super()
-    this.length = 0
-    if (iterate.length) {
-      let link = iterate.reduceRight((res, cur) => {
-        let o = {
-          element: cur,
-          next: res
-        }
-        this.length++
-        return o
-      }, null)
-      this.head = link
-    } else {
-      this.head = null
-    }
-  }
-  static node (element) { // 静态方法可以由类调用,不能由实例调用.
+  genKey (value) {
     return {
-      element: element,
-      next: null
+      // key: key,
+      value: value,
+      left: null,
+      right: null
     }
   }
-  append (element) {
-    let ele = LinkedList.node(element), current = null
-    // this.head = ele
-    if (this.head === null) {
-      this.head = ele
-    } else {
-      current = this.head
-      while (current.next) {
-        current = current.next
-      }
-      current.next = ele
-    }
-    this.length++
-  }
-  // 在指定位置插入元素
-  insert (position, element) {
-    if (position < -1 || position > this.length) {
-      return false
-    }
-    let node = LinkedList.node(element),
-      current = this.head,
-      previous = null,
-      index = 0
-    if (position === 0) {
-      node.next = this.head
-      this.head = node
-    } else {
-      while (index++ < position) {
-        previous = current
-        current = current.next
-      }
-      node.next = current
-      previous.next = node
-    }
-    this.length++
-    return true
-  }
-  removeAt (position) {
-    if (position > -1 && position < this.length) {
-      let current = this.head, previous = null, index = 0
-      if (position === 0) {
-        current = this.head
-        this.head = this.head.next
+  insertKey (key, newKey) {
+    if (newKey.value < key.value) { // 左边
+      if (!key.left) {
+        key.left = newKey
       } else {
-        while (index++ < position) {
-          previous = current
-          current = current.next
-        }
-        previous.next = current.next
+        this.insertKey(key.left, newKey)
       }
-      this.length--
-      return current.element
+    } else { // 右边
+      if (!key.right) {
+        key.right = newKey
+      } else {
+        this.insertKey(key.right, newKey)
+      }
+    }
+  }
+  insert (value) {
+    let key = this.genKey(value)
+    if (!this.root) {
+      this.root = key
     } else {
-      return false
+      this.insertKey(this.root, key)
     }
   }
-  // 删除链表中包含指定元素的节点。不返回东西。
-  removeElement (element, all = false) {
-    if (this.head.element === element) {
-      this.head = null
-      this.length = 0
-    } else {
-      let current = this.head.next, previous = this.head
-      while (current) {
-        if (current.element === element) {
-          previous.next = current.next
-          this.length--
-          if (!all) {
-            break
-          }
-        }
-        previous = current
-        current = current.next
-      }
-    }
-  }
-  // 删除链表中所有包含指定节点的元素
-  // removeElementAll (element) {
-  //   this.removeElement(element, true)
-  // }
-  // 得到指定元素第一次出现的位置
-  indexOf (element) {
-    let current = this.head, index = 0
-    while (current) {
-      if (current.element === element) {
-        return index
-      }
-      index++
-      current = current.next
-    }
-    return -1
-  }
-  indexOfAll (element) {
-    let current = this.head, index = 0, res = []
-    while (current) {
-      if (current.element === element) {
-        res.push(index)
-      }
-      index++
-      current = current.next
-    }
-    return res
-  }
-  // 得到指定位置的元素
-  getEleByIndex (index = null) {
-    if (index === null) {
+  search (key) {}
+  remove (key) {}
+  min () {
+    let key = this.root
+    if (!key) {
       return null
     } else {
-      let i = 0, current = this.head
-      while (i < index && current) {
-        current = current.next
-        i++
+      while (key && !key.left) {
+        key = key.left
       }
-      return current.element
+      return key.value
     }
   }
-  // 得到指定位置的节点
-  getNodeByIndex (index) {
-    if (0 <= index && index < this.length) {
-      let i = 0
-      let res = this.head
-      while (i < index && res) {
-        res = res.next
-        i++
-      }
-      return res
-    } else {
-      return {}
+  max () {}
+  inOrderTranverseNode (key, cb) {
+    if (key) {
+      this.inOrderTranverseNode(key.left, cb)
+      cb(key.value)
+      this.inOrderTranverseNode(key.right, cb)
     }
   }
-  // 轮换为为数组
-  toArray () {
-    let cur = this.head
-    let arr = []
-    while (cur) {
-      arr.push(cur.element)
-      cur = cur.next
+  inOrderTranverse (cb) {
+    this.inOrderTranverseNode(this.root, cb)
+  }
+  preOrderTranverseNode (key, cb) {
+    if (key) {
+      cb(key.value)
+      this.preOrderTranverseNode(key.left, cb)
+      this.preOrderTranverseNode(key.right, cb)
     }
-    return arr
   }
-  // 反转。不改变原链表，返回新链表。
-  reverse () {
-    return this.toArray().reverse().reduce((r, cur) => {
-      r.append(cur)
-      return r
-    }, new LinkedList())
+  preOrderTranverse (cb) {
+    this.preOrderTranverseNode(this.root, cb)
   }
-  // 反转。改变原链表的顺序，不返回东西。
-  reverseSelf () {
-    let fn = (p, q = null) => {
-      if (p) {
-        return q
-      } else {
-        return fn(p.next, {element: p.element, next: q})
-      }
+  postOrderTranverseNode (key, cb) {
+    if (key) {
+      this.postOrderTranverseNode(key.left, cb)
+      this.postOrderTranverseNode(key.right, cb)
+      cb(key.value)
     }
-    this.head = fn(this.head)
   }
-  // 返回新的链表，不改变原链表。
-  slice () {}
-  // 在链表中指定的位置插入或删除指定的元素。返回被删除的链表部分。
-  splice () {}
-  // 重设置head,不修改原链表，返回新链表。
-  rehead () {}
-}
-class ValuePair {
-  constructor (key, value) {
-    this.key = key
-    this.value = value
-    this.toString = `[${key} - ${value}]`
+  postOrderTranverse (cb) {
+    this.postOrderTranverseNode(this.root, cb)
   }
 }
-
-class hashTableLinear {
-  constructor () {
-    this.table = {}
-  }
-  loseloseHashCode (key) {
-    let hash = 0
-    for (let i = 0, iLen = key.length; i < iLen; i++) {
-      hash += key.charCodeAt(i)
-    }
-    return hash % 37
-  }
-  djbHashCode (key) {
-    var hash = 5381
-    for (let i = 0, iLen = key.length; i < iLen; i++) {
-      hash = hash * 33 + key.charCodeAt(i)
-    }
-    return hash % 1013
-  }
-  put (key, value) {
-    let position = this.djbHashCode(key)
-    while (this.table[position]) {
-      position++
-    }
-    this.table[position] = new ValuePair(key, value)
-  }
-  remove (key) {
-    let position = this.djbHashCode(key)
-    let value = undefined
-    while (this.table[position] && this.table[position].key !== key) {
-      position++
-    }
-    value = this.table[position] ? this.table[position].value : value
-    this.table[position] = undefined
-    return value
-  }
-  get (key) {
-    let position = this.djbHashCode(key)
-    let cur = this.table[position]
-    let value = undefined
-    while (cur && cur.key !== key) {
-      cur = this.table[position++]
-    }
-    return cur ? cur.value : value
-  }
-}
-
-
-r = new hashTableLinear()
-r.put('Jonatian', 'a')
-r.put('Jamie', 'b')
-r.put('Sue', 'c3')
-r.put('c', 'cqwert')
-let ele = r.remove('Sue')
+r = new BinarySearchTree()
+r.insert(11)
+r.insert(7)
+r.insert(15)
+r.insert(5)
+r.insert(3)
+r.insert(9)
+r.insert(8)
+r.insert(10)
+r.insert(13)
+// r.inOrderTranverse((v) => console.log(v))
+// r.postOrderTranverse((v) => console.log(v))
+// r.preOrderTranverse((v) => console.log(v))
+r = r.min()
+// r.put('Jamie', 'b')
+// r.put('Sue', 'c3')
+// r.put('c', 'cqwert')
+// let ele = r.remove('Sue')
 // let ele = r.remove('Jamie')
 // let ele = r.remove('Jonatian')
 // let ele = r.remove('c')
